@@ -1,152 +1,104 @@
 package com.vixians.tarla.config;
 
+import com.vixians.tarla.TarlaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
-import java.io.IOException;
 
 public class ConfigManager {
-    private JavaPlugin plugin;
+    private TarlaPlugin plugin;
     private FileConfiguration config;
     private File configFile;
 
-    public ConfigManager(JavaPlugin plugin) {
+    public ConfigManager(TarlaPlugin plugin) {
         this.plugin = plugin;
-        this.configFile = new File(plugin.getDataFolder(), "config.yml");
         loadConfig();
     }
 
-    public void loadConfig() {
+    private void loadConfig() {
+        configFile = new File(plugin.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             plugin.saveResource("config.yml", false);
         }
         config = YamlConfiguration.loadConfiguration(configFile);
+        setDefaults();
+    }
+
+    private void setDefaults() {
+        // Farm Settings
+        config.addDefault("farm.world", "world_farm");
+        config.addDefault("farm.coins-per-crop", 10);
+        config.addDefault("farm.auto-regen-interval", 300);
+
+        // Message Settings
+        config.addDefault("messages.prefix", "&6[vTarla] &r");
+        config.addDefault("messages.harvest", "&aYou harvested {crop} and earned &6{coins} coins!");
+        config.addDefault("messages.market-title", "&6Market");
+
+        // ActionBar Settings
+        config.addDefault("actionbar.enabled", true);
+        config.addDefault("actionbar.format", "&6Coins: &e{coins} &6| &aMultiplier: &e{multiplier}x &6| &cDiscount: &e{discount}%");
+        config.addDefault("actionbar.update-interval", 2);
+
+        // BossBar Settings
+        config.addDefault("bossbar.enabled", true);
+        config.addDefault("bossbar.update-interval", 5);
+
+        // Auto-Save Settings
+        config.addDefault("auto-save.enabled", true);
+        config.addDefault("auto-save.interval", 300);
+
+        config.options().copyDefaults(true);
     }
 
     public void reloadConfig() {
-        loadConfig();
+        config = YamlConfiguration.loadConfiguration(configFile);
+        setDefaults();
     }
 
-    public void saveConfig() {
-        try {
-            config.save(configFile);
-        } catch (IOException e) {
-            plugin.getLogger().severe("Could not save config: " + e.getMessage());
-        }
-    }
-
-    public FileConfiguration getConfig() {
-        return config;
-    }
-
-    // Farm settings
+    // Getters
     public String getFarmWorld() {
-        return config.getString("farm.world", "farm_world");
+        return config.getString("farm.world", "world_farm");
     }
 
-    public void setFarmWorld(String world) {
-        config.set("farm.world", world);
-        saveConfig();
-    }
-
-    public int getAutoSaveInterval() {
-        return config.getInt("farm.auto-save-interval", 300);
+    public long getCoinsPerCrop() {
+        return config.getLong("farm.coins-per-crop", 10);
     }
 
     public int getAutoRegenInterval() {
-        return config.getInt("farm.auto-regen-interval", 600);
+        return config.getInt("farm.auto-regen-interval", 300);
     }
 
-    // Coin settings
-    public int getCoinsPerCrop() {
-        return config.getInt("coin.coins-per-crop", 10);
-    }
-
-    public String getCoinDisplayName() {
-        return config.getString("coin.display-name", "&6Tarla Coin&r");
-    }
-
-    public String getCoinEarnMessage() {
-        return config.getString("coin.earn-message", "&a+{coins} {coin_name}");
-    }
-
-    public int getDatabaseSaveInterval() {
-        return config.getInt("coin.database-save-interval", 300);
-    }
-
-    // Multiplier settings
-    public boolean isMultiplierEnabled() {
-        return config.getBoolean("multiplier.enabled", true);
-    }
-
-    public double getDefaultMultiplier() {
-        return config.getDouble("multiplier.default-multiplier", 1.0);
-    }
-
-    // Discount settings
-    public boolean isDiscountEnabled() {
-        return config.getBoolean("discount.enabled", true);
-    }
-
-    public int getCurrentDiscount() {
-        return config.getInt("discount.current-discount", 0);
-    }
-
-    public void setCurrentDiscount(int discount) {
-        config.set("discount.current-discount", Math.min(discount, getMaxDiscount()));
-        saveConfig();
-    }
-
-    public int getMaxDiscount() {
-        return config.getInt("discount.max-discount", 50);
-    }
-
-    // Market settings
-    public String getMarketTitle() {
-        return config.getString("market.title", "&6Tarla Market");
-    }
-
-    // Message settings
     public String getMessagePrefix() {
         return config.getString("messages.prefix", "&6[vTarla] &r");
     }
 
-    public String getMessage(String key) {
-        String message = config.getString("messages." + key);
-        return message != null ? message : "Missing message: " + key;
+    public String getHarvestMessage() {
+        return config.getString("messages.harvest", "&aYou harvested {crop} and earned &6{coins} coins!");
     }
 
-    // Display settings
+    public String getMarketTitle() {
+        return config.getString("messages.market-title", "&6Market");
+    }
+
     public boolean isActionBarEnabled() {
-        return config.getBoolean("display.actionbar.enabled", true);
+        return config.getBoolean("actionbar.enabled", true);
     }
 
     public String getActionBarFormat() {
-        return config.getString("display.actionbar.format", "&6Coins: {coins}");
+        return config.getString("actionbar.format", "&6Coins: &e{coins} &6| &aMultiplier: &e{multiplier}x &6| &cDiscount: &e{discount}%");
     }
 
     public int getActionBarUpdateInterval() {
-        return config.getInt("display.actionbar.update-interval", 60);
+        return config.getInt("actionbar.update-interval", 2);
     }
 
     public boolean isBossBarEnabled() {
-        return config.getBoolean("display.bossbar.enabled", true);
-    }
-
-    public String getBossBarTitle() {
-        return config.getString("display.bossbar.title", "&6Tarla Coins: {coins}");
-    }
-
-    public String getBossBarColor() {
-        return config.getString("display.bossbar.color", "GOLD");
-    }
-
-    public String getBossBarStyle() {
-        return config.getString("display.bossbar.style", "SEGMENTED_10");
+        return config.getBoolean("bossbar.enabled", true);
     }
 
     public int getBossBarUpdateInterval() {
-        return config.getInt("display.bossbar.update-interval", 60);
+        return config.getInt("bossbar.update-interval", 5);
     }
 }

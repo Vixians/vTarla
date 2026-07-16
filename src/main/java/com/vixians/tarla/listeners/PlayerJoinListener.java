@@ -17,11 +17,14 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         
-        // Load player data
-        plugin.getTaskManager().runAsync(() -> {
-            // Coin data is automatically loaded
-            long coins = plugin.getCoinManager().getCoins(player);
-            plugin.getLogger().info("Player " + player.getName() + " joined with " + coins + " coins");
-        });
+        // Initialize player data
+        if (plugin.getCoinManager().getCoins(player) == 0 && !player.hasPlayedBefore()) {
+            plugin.getCoinManager().addCoins(player, 100); // Starting bonus
+        }
+        
+        // Set default multiplier if not set
+        if (plugin.getMultiplierManager().getMultiplier(player) == 0) {
+            plugin.getMultiplierManager().setMultiplier(player, "default");
+        }
     }
 }

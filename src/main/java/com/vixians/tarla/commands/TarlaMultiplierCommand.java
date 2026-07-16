@@ -2,7 +2,6 @@ package com.vixians.tarla.commands;
 
 import com.vixians.tarla.TarlaPlugin;
 import com.vixians.tarla.utils.MessageUtil;
-import com.vixians.tarla.utils.GUIUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,18 +17,12 @@ public class TarlaMultiplierCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§cThis command can only be used by players!");
+            sender.sendMessage("This command can only be used by players!");
             return true;
         }
 
         Player player = (Player) sender;
-        
-        if (!player.hasPermission("tarla.multiplier")) {
-            player.sendMessage(MessageUtil.colorize(plugin.getConfigManager().getMessagePrefix() + "&cYou don't have permission!"));
-            return true;
-        }
-
-        GUIUtil.openMultiplierGUI(player);
+        com.vixians.tarla.utils.GUIUtil.openMultiplierGUI(player);
         return true;
     }
 }

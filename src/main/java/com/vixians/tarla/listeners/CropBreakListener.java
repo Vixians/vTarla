@@ -2,7 +2,6 @@ package com.vixians.tarla.listeners;
 
 import com.vixians.tarla.TarlaPlugin;
 import com.vixians.tarla.utils.MessageUtil;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,34 +17,41 @@ public class CropBreakListener implements Listener {
     @EventHandler
     public void onCropBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        Block block = event.getBlock();
+        String worldName = player.getWorld().getName();
 
-        String farmWorld = plugin.getConfigManager().getFarmWorld();
-        if (!block.getWorld().getName().equals(farmWorld)) {
+        // Check if in farm world
+        if (!worldName.equals(plugin.getConfigManager().getFarmWorld())) {
             return;
         }
 
-        String blockType = block.getType().toString();
-        if (!isCrop(blockType)) {
+        String cropType = event.getBlock().getType().name();
+
+        // Check if it's a crop
+        if (!isCrop(cropType)) {
             return;
         }
 
-        plugin.getFarmManager().recordCropBreak(player, block.getLocation(), blockType);
-
-        long coins = plugin.getConfigManager().getCoinsPerCrop();
+        long coinsPerCrop = plugin.getConfigManager().getCoinsPerCrop();
         long multiplier = plugin.getMultiplierManager().getMultiplier(player);
-        long earnedCoins = coins * multiplier;
+        long finalCoins = coinsPerCrop * multiplier;
         
-        String message = plugin.getConfigManager().getCoinEarnMessage()
-                .replace("{coins}", String.valueOf(earnedCoins))
-                .replace("{coin_name}", plugin.getConfigManager().getCoinDisplayName());
-        
-        player.sendActionBar(MessageUtil.colorize(message));
+        int discount = plugin.getDiscountManager().getCurrentDiscount();
+        if (discount > 0) {
+            finalCoins = (long) (finalCoins * (1 - discount / 100.0));
+        }
+
+        plugin.getCoinManager().addCoins(player, finalCoins);
+        plugin.getFarmManager().recordCropBreak(player, event.getBlock().getLocation(), cropType);
+
+        String message = plugin.getConfigManager().getHarvestMessage()
+                .replace("{coins}", String.valueOf(finalCoins))
+                .replace("{crop}", cropType.toLowerCase());
+        player.sendMessage(MessageUtil.colorize(plugin.getConfigManager().getMessagePrefix() + message));
     }
 
-    private boolean isCrop(String blockType) {
-        return blockType.contains("WHEAT") || blockType.contains("CARROT") || 
-               blockType.contains("POTATO") || blockType.contains("BEETROOT") ||
-               blockType.contains("NETHER_WART") || blockType.contains("COCOA");
+    private boolean isCrop(String material) {
+        return material.contains("WHEAT") || material.contains("CARROT") ||
+               material.contains("POTATO") || material.contains("BEETROOT") ||
+               material.contains("NETHER_WART") || material.contains("COCOA");
     }
 }

@@ -23,18 +23,13 @@ public class MultiplierGUI {
     }
 
     public void open() {
-        this.inventory = Bukkit.createInventory(null, 36, MessageUtil.colorize("&6Multiplier Menu"));
+        this.inventory = Bukkit.createInventory(null, 27, MessageUtil.colorize("&6Multiplier Menu"));
 
-        // Add current multiplier info
-        ItemStack currentInfo = createCurrentMultiplierItem();
-        inventory.setItem(4, currentInfo);
-
-        // Add available multipliers
-        int slot = 9;
-        for (var tier : plugin.getMultiplierManager().getAllTiers().entrySet()) {
+        int slot = 0;
+        for (String tier : plugin.getMultiplierManager().getAllTiers().keySet()) {
             if (slot < 27) {
-                ItemStack tierItem = createTierItem(tier.getKey(), tier.getValue());
-                inventory.setItem(slot, tierItem);
+                ItemStack item = createTierItem(tier);
+                inventory.setItem(slot, item);
                 slot += 2;
             }
         }
@@ -42,47 +37,29 @@ public class MultiplierGUI {
         player.openInventory(inventory);
     }
 
-    private ItemStack createCurrentMultiplierItem() {
-        ItemStack stack = new ItemStack(Material.GOLD_BLOCK);
-        ItemMeta meta = stack.getItemMeta();
-        if (meta != null) {
-            String currentTier = plugin.getMultiplierManager().getMultiplierTier(player);
-            long multiplier = plugin.getMultiplierManager().getMultiplier(player);
-            
-            meta.setDisplayName(MessageUtil.colorize("&6Your Multiplier"));
-            List<String> lore = new ArrayList<>();
-            lore.add(MessageUtil.colorize("&7Tier: &a" + currentTier));
-            lore.add(MessageUtil.colorize("&7Multiplier: &a" + multiplier + "x"));
-            meta.setLore(lore);
-            stack.setItemMeta(meta);
-        }
-        return stack;
-    }
-
-    private ItemStack createTierItem(String tier, double multiplier) {
-        ItemStack stack = new ItemStack(Material.DIAMOND);
-        ItemMeta meta = stack.getItemMeta();
+    private ItemStack createTierItem(String tier) {
+        ItemStack item = new ItemStack(Material.DIAMOND);
+        ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(MessageUtil.colorize(plugin.getMultiplierManager().getMultiplierDisplayName(tier)));
-            
             List<String> lore = new ArrayList<>();
+            lore.add(MessageUtil.colorize("&7"));
+            long multiplier = plugin.getMultiplierManager().getAllTiers().get(tier);
             long price = plugin.getMultiplierManager().getMultiplierPrice(tier);
-            long playerCoins = plugin.getCoinManager().getCoins(player);
-            
-            lore.add(MessageUtil.colorize("&7Multiplier: &a" + multiplier + "x"));
-            lore.add(MessageUtil.colorize("&7Price: &6" + price + " coins"));
-            lore.add(MessageUtil.colorize("&7Your coins: &a" + playerCoins));
+            lore.add(MessageUtil.colorize("&aMultiplier: &6" + multiplier + "x"));
+            lore.add(MessageUtil.colorize("&aPrice: &6" + price + " coins"));
             lore.add(MessageUtil.colorize("&7"));
             
-            if (playerCoins >= price) {
-                lore.add(MessageUtil.colorize("&aClick to purchase!"));
+            String currentTier = plugin.getMultiplierManager().getMultiplierTier(player);
+            if (currentTier.equals(tier)) {
+                lore.add(MessageUtil.colorize("&a✓ Current Tier"));
             } else {
-                lore.add(MessageUtil.colorize("&cInsufficient coins!"));
+                lore.add(MessageUtil.colorize("&aClick to upgrade!"));
             }
             
             meta.setLore(lore);
-            stack.setItemMeta(meta);
+            item.setItemMeta(meta);
         }
-        return stack;
+        return item;
     }
 }
