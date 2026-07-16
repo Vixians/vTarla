@@ -2,6 +2,7 @@ package com.vixians.tarla.commands;
 
 import com.vixians.tarla.TarlaPlugin;
 import com.vixians.tarla.utils.MessageUtil;
+import com.vixians.tarla.utils.GUIUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,14 +18,14 @@ public class TarlaCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("§cThis command can only be used by players!");
+            sender.sendMessage("\u00a7cThis command can only be used by players!");
             return true;
         }
 
         Player player = (Player) sender;
 
         if (args.length == 0) {
-            sendHelp(player);
+            GUIUtil.openMainMenu(player);
             return true;
         }
 
@@ -41,10 +42,10 @@ public class TarlaCommand implements CommandExecutor {
                 sendProfile(player);
                 break;
             case "market":
-                com.vixians.tarla.utils.GUIUtil.openMarketGUI(player);
+                GUIUtil.openMarketGUI(player);
                 break;
             case "multiplier":
-                com.vixians.tarla.utils.GUIUtil.openMultiplierGUI(player);
+                GUIUtil.openMultiplierGUI(player);
                 break;
             case "reload":
                 if (!player.hasPermission("tarla.admin.reload")) {
@@ -54,27 +55,36 @@ public class TarlaCommand implements CommandExecutor {
                 reloadPlugin(player);
                 break;
             default:
-                sendHelp(player);
+                GUIUtil.openMainMenu(player);
         }
         return true;
     }
 
     private void sendHelp(Player player) {
         String prefix = MessageUtil.colorize(plugin.getConfigManager().getMessagePrefix());
-        player.sendMessage(prefix + "§6========== vTarla Help ==========");
-        player.sendMessage(prefix + "§a/tarla stats §7- Show your statistics");
-        player.sendMessage(prefix + "§a/tarla profile §7- Show your profile");
-        player.sendMessage(prefix + "§a/tarla market §7- Open market");
-        player.sendMessage(prefix + "§a/tarla multiplier §7- Open multiplier menu");
+        player.sendMessage(prefix + "&6========== vTarla Help ==========");
+        player.sendMessage(prefix + "&a/tarla &7- Open main menu");
+        player.sendMessage(prefix + "&a/tarla stats &7- Show your statistics");
+        player.sendMessage(prefix + "&a/tarla profile &7- Show your profile");
+        player.sendMessage(prefix + "&a/tarla market &7- Open market");
+        player.sendMessage(prefix + "&a/tarla multiplier &7- Open multiplier menu");
         if (player.hasPermission("tarla.admin.reload")) {
-            player.sendMessage(prefix + "§a/tarla reload §7- Reload plugin");
+            player.sendMessage(prefix + "&a/tarla reload &7- Reload plugin");
         }
-        player.sendMessage(prefix + "§6=====================================");
+        player.sendMessage(prefix + "&6=====================================");
     }
 
     private void sendStats(Player player) {
-        com.vixians.tarla.stats.PlayerStats stats = new com.vixians.tarla.stats.PlayerStats(plugin, player);
-        player.sendMessage(MessageUtil.colorize(stats.getStatisticsFormatted()));
+        long coins = plugin.getCoinManager().getCoins(player);
+        long multiplier = plugin.getMultiplierManager().getMultiplier(player);
+        int discount = plugin.getDiscountManager().getCurrentDiscount();
+        
+        String prefix = MessageUtil.colorize(plugin.getConfigManager().getMessagePrefix());
+        player.sendMessage(prefix + "&6========== Your Statistics ==========");
+        player.sendMessage(prefix + "&aCoins: &6" + coins);
+        player.sendMessage(prefix + "&aMultiplier: &6" + multiplier + "x");
+        player.sendMessage(prefix + "&aDiscount: &6" + discount + "%");
+        player.sendMessage(prefix + "&6=====================================");
     }
 
     private void sendProfile(Player player) {
@@ -84,6 +94,6 @@ public class TarlaCommand implements CommandExecutor {
     private void reloadPlugin(Player player) {
         plugin.getConfigManager().reloadConfig();
         player.sendMessage(MessageUtil.colorize(plugin.getConfigManager().getMessagePrefix() + "&aPlugin reloaded!"));
-        plugin.getLogger().info("§aPlugin reloaded by " + player.getName());
+        plugin.getLogger().info("\u2713 Plugin reloaded by " + player.getName());
     }
 }

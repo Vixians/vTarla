@@ -10,6 +10,7 @@ import com.vixians.tarla.discount.DiscountManager;
 import com.vixians.tarla.commands.*;
 import com.vixians.tarla.listeners.*;
 import com.vixians.tarla.utils.TaskManager;
+import com.vixians.tarla.utils.GUIUtil;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
 
@@ -29,7 +30,7 @@ public class TarlaPlugin extends JavaPlugin {
         instance = this;
         long startTime = System.currentTimeMillis();
 
-        getLogger().info("§6vTarla Plugin starting...");
+        getLogger().info("&6vTarla Plugin starting...");
 
         // Initialize managers in correct order
         this.configManager = new ConfigManager(this);
@@ -40,6 +41,9 @@ public class TarlaPlugin extends JavaPlugin {
         this.farmManager = new FarmManager(this);
         this.discountManager = new DiscountManager(this);
         this.taskManager = new TaskManager(this);
+        
+        // Initialize GUIUtil with plugin reference
+        new GUIUtil(this);
 
         // Register commands
         registerCommands();
@@ -51,12 +55,12 @@ public class TarlaPlugin extends JavaPlugin {
         startAsyncTasks();
 
         long loadTime = System.currentTimeMillis() - startTime;
-        getLogger().info("§avTarla Plugin enabled! (" + loadTime + "ms)");
+        getLogger().info("&avTarla Plugin enabled! (" + loadTime + "ms)");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("§cvTarla Plugin disabling...");
+        getLogger().info("&cvTarla Plugin disabling...");
 
         // Save all data
         if (coinManager != null) {
@@ -75,7 +79,7 @@ public class TarlaPlugin extends JavaPlugin {
             taskManager.shutdown();
         }
 
-        getLogger().info("§avTarla Plugin disabled!");
+        getLogger().info("&avTarla Plugin disabled!");
     }
 
     private void registerCommands() {

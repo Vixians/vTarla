@@ -6,21 +6,39 @@ import org.bukkit.entity.Player;
 public class GUIUtil {
     private static TarlaPlugin plugin;
 
-    public GUIUtil(TarlaPlugin plugin) {
-        this.plugin = plugin;
+    public GUIUtil(TarlaPlugin tarlaPlugin) {
+        plugin = tarlaPlugin;
+    }
+
+    public static void setPlugin(TarlaPlugin tarlaPlugin) {
+        plugin = tarlaPlugin;
+    }
+
+    public static void openMainMenu(Player player) {
+        if (plugin == null) {
+            player.sendMessage("\u00a7cPlugin not initialized!");
+            return;
+        }
+        new com.vixians.tarla.menu.MainMenu(plugin, player).open();
     }
 
     public static void openMarketGUI(Player player) {
+        if (plugin == null) {
+            player.sendMessage("\u00a7cPlugin not initialized!");
+            return;
+        }
         plugin.getTaskManager().runSync(() -> {
-            com.vixians.tarla.market.MarketGUI gui = new com.vixians.tarla.market.MarketGUI(plugin, player);
-            gui.open();
+            new com.vixians.tarla.market.MarketGUI(plugin, player).open();
         });
     }
 
     public static void openMultiplierGUI(Player player) {
+        if (plugin == null) {
+            player.sendMessage("\u00a7cPlugin not initialized!");
+            return;
+        }
         plugin.getTaskManager().runSync(() -> {
-            com.vixians.tarla.market.MultiplierGUI gui = new com.vixians.tarla.market.MultiplierGUI(plugin, player);
-            gui.open();
+            new com.vixians.tarla.market.MultiplierGUI(plugin, player).open();
         });
     }
 

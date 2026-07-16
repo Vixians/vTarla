@@ -12,17 +12,18 @@ import java.util.UUID;
 public class FarmManager {
     private TarlaPlugin plugin;
     private DatabaseManager db;
-    private Map<String, Long> cropBreakTimes = new HashMap<>();
+    private SmartCropRegen smartCropRegen;
 
     public FarmManager(TarlaPlugin plugin) {
         this.plugin = plugin;
         this.db = plugin.getDatabaseManager();
+        this.smartCropRegen = new SmartCropRegen(plugin);
         loadBreakData();
     }
 
     public void recordCropBreak(Player player, Location location, String cropType) {
         String key = locationToString(location);
-        cropBreakTimes.put(key, System.currentTimeMillis());
+        smartCropRegen.recordCropBreak(key);
         
         long coins = plugin.getConfigManager().getCoinsPerCrop();
         plugin.getCoinManager().addCoins(player, coins);
@@ -32,21 +33,6 @@ public class FarmManager {
                 "INSERT INTO farm_breaks (uuid, location, crop_type, break_time, coins_earned) VALUES (?, ?, ?, ?, ?)",
                 player.getUniqueId().toString(), key, cropType, System.currentTimeMillis(), coins
         );
-    }
-
-    public boolean shouldRegenerateCrop(Location location) {
-        String key = locationToString(location);
-        Long breakTime = cropBreakTimes.get(key);
-        
-        if (breakTime == null) return false;
-        
-        int regenInterval = plugin.getConfigManager().getAutoRegenInterval();
-        return (System.currentTimeMillis() - breakTime) >= (regenInterval * 1000L);
-    }
-
-    public void regenerateCrop(Location location) {
-        String key = locationToString(location);
-        cropBreakTimes.remove(key);
     }
 
     public String isFarmWorld(String worldName) {
@@ -59,14 +45,14 @@ public class FarmManager {
 
     private void loadBreakData() {
         try {
-            ResultSet rs = db.executeQuery("SELECT location, break_time FROM farm_breaks ORDER BY break_time DESC LIMIT 1000");
+            ResultSet rs = db.executeQuery("SELECT location FROM farm_breaks ORDER BY break_time DESC LIMIT 100");
             if (rs != null) {
                 while (rs.next()) {
                     String location = rs.getString("location");
-                    long breakTime = rs.getLong("break_time");
-                    cropBreakTimes.put(location, breakTime);
+                    smartCropRegen.recordCropBreak(location);
                 }
                 rs.close();
+                plugin.getLogger().info("✓ Loaded farm break data");
             }
         } catch (Exception e) {
             plugin.getLogger().severe("Error loading farm data: " + e.getMessage());
@@ -74,6 +60,6 @@ public class FarmManager {
     }
 
     public void saveAllData() {
-        plugin.getLogger().info("§aFarm data saved!");
+        plugin.getLogger().info("✓ Farm data saved!");
     }
 }
