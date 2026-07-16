@@ -1,0 +1,207 @@
+# vTarla Plugin Configuration
+
+# ==================== FARM SETTINGS ====================
+farm:
+  # World name where crops won't drop items
+  world: "farm_world"
+  
+  # Auto-save interval (in seconds)
+  auto-save-interval: 300
+  
+  # Auto-regeneration interval (in seconds)
+  auto-regen-interval: 600
+
+# ==================== COIN SETTINGS ====================
+coin:
+  # Base coins per crop break
+  coins-per-crop: 10
+  
+  # Coin display name
+  display-name: "&6Tarla Coin&r"
+  
+  # Action bar message when earning coins
+  earn-message: "&a+{coins} {coin_name}"
+  
+  # Database save interval (in seconds)
+  database-save-interval: 300
+
+# ==================== MULTIPLIER SETTINGS ====================
+multiplier:
+  # Enable multiplier system
+  enabled: true
+  
+  # Default multiplier (1x = 1.0)
+  default-multiplier: 1.0
+  
+  # Multiplier tiers
+  tiers:
+    bronze:
+      multiplier: 1.5
+      price: 5000
+      permission: "tarla.multiplier.bronze"
+      display-name: "&8Bronze Multiplier &7(1.5x)"
+    
+    silver:
+      multiplier: 2.0
+      price: 15000
+      permission: "tarla.multiplier.silver"
+      display-name: "&7Silver Multiplier &7(2.0x)"
+    
+    gold:
+      multiplier: 3.0
+      price: 35000
+      permission: "tarla.multiplier.gold"
+      display-name: "&6Gold Multiplier &7(3.0x)"
+    
+    diamond:
+      multiplier: 5.0
+      price: 75000
+      permission: "tarla.multiplier.diamond"
+      display-name: "&bDiamond Multiplier &7(5.0x)"
+    
+    emerald:
+      multiplier: 10.0
+      price: 150000
+      permission: "tarla.multiplier.emerald"
+      display-name: "&2Emerald Multiplier &7(10.0x)"
+
+# ==================== DISCOUNT SETTINGS ====================
+discount:
+  # Enable discount system
+  enabled: true
+  
+  # Current global discount percentage (0-100)
+  current-discount: 0
+  
+  # Max discount percentage
+  max-discount: 50
+
+# ==================== MARKET SETTINGS ====================
+market:
+  # Market GUI title
+  title: "&6Tarla Market"
+  
+  # Market items configuration
+  items:
+    diamond:
+      name: "&bDiamond Block"
+      material: "DIAMOND_BLOCK"
+      price: 1000
+      amount: 1
+      lore:
+        - "&7Price: 1000 Tarla Coins"
+        - "&7Click to buy!"
+      command: "none"
+    
+    emerald:
+      name: "&2Emerald Block"
+      material: "EMERALD_BLOCK"
+      price: 1500
+      amount: 1
+      lore:
+        - "&7Price: 1500 Tarla Coins"
+        - "&7Click to buy!"
+      command: "none"
+    
+    gold:
+      name: "&6Gold Block"
+      material: "GOLD_BLOCK"
+      price: 500
+      amount: 1
+      lore:
+        - "&7Price: 500 Tarla Coins"
+        - "&7Click to buy!"
+      command: "none"
+    
+    vip:
+      name: "&5VIP Access"
+      material: "AMETHYST_CLUSTER"
+      price: 5000
+      amount: 1
+      lore:
+        - "&7Price: 5000 Tarla Coins"
+        - "&7Click to buy!"
+      command: "give {player} diamond_block 1"
+
+# ==================== MESSAGE SETTINGS ====================
+messages:
+  # Prefix for all messages
+  prefix: "&6[vTarla] &r"
+  
+  # Coin messages
+  coin-earn: "{prefix}&a+{coins} Tarla Coin! Total: {total}"
+  coin-insufficient: "{prefix}&cYou don't have enough coins!"
+  coin-purchase-success: "{prefix}&aYou purchased {item}! &c-{price} coins"
+  coin-purchase-failed: "{prefix}&cPurchase failed!"
+  
+  # Multiplier messages
+  multiplier-purchased: "{prefix}&aMultiplier &6{tier} &apurchased! &c-{price} coins"
+  multiplier-already-active: "{prefix}&cYou already have this multiplier!"
+  multiplier-changed: "{prefix}&aMultiplier changed to &6{tier} &a({multiplier}x)"
+  
+  # Discount messages
+  discount-set: "{prefix}&aDiscount set to &6{discount}%"
+  discount-removed: "{prefix}&aDiscount removed!"
+  discount-message: "{prefix}&6Current Discount: {discount}%"
+  
+  # Admin messages
+  plugin-reloaded: "{prefix}&aPlugin reloaded successfully!"
+  world-set: "{prefix}&aFarm world set to &6{world}"
+  
+  # General messages
+  help:
+    - "&6========== &avTarla Help &6=========="
+    - "&a/tarla stats &7- Show your statistics"
+    - "&a/tarla profile &7- Show your profile"
+    - "&a/tarla market &7- Open market"
+    - "&a/tarla multiplier &7- Open multiplier menu"
+    - "&a/tarla reload &7- Reload plugin (Admin)"
+    - "&a/taladiscount set <amount> &7- Set discount (Admin)"
+    - "&a/taladiscount remove &7- Remove discount (Admin)"
+    - "&6======================================"
+
+# ==================== DATABASE SETTINGS ====================
+database:
+  # Database file path
+  file: "plugins/vTarla/database.db"
+  
+  # Auto backup interval (in seconds, 0 = disabled)
+  backup-interval: 86400
+
+# ==================== ACTIONBAR & BOSSBAR ====================
+display:
+  # Enable action bar
+  actionbar:
+    enabled: true
+    format: "&6Tarla Coins: {coins} &7| &aMultiplier: &6{multiplier}x &7| &6Discount: {discount}%"
+    update-interval: 60
+  
+  # Enable boss bar
+  bossbar:
+    enabled: true
+    title: "&6Tarla Coins: {coins} &7| &aMultiplier: &6{multiplier}x"
+    color: "GOLD"
+    style: "SEGMENTED_10"
+    update-interval: 60
+
+# ==================== CROP SETTINGS ====================
+crops:
+  # Crops that count for the farm system
+  tracked-crops:
+    - "WHEAT"
+    - "CARROTS"
+    - "POTATOES"
+    - "BEETROOTS"
+    - "NETHER_WART"
+    - "COCOA_BEANS"
+
+# ==================== LOGGING ====================
+logging:
+  # Enable console logging
+  console: true
+  
+  # Log file path
+  file: "plugins/vTarla/logs/vTarla.log"
+  
+  # Log level (DEBUG, INFO, WARNING, ERROR)
+  level: "INFO"
