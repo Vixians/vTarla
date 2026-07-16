@@ -1,0 +1,79 @@
+name: vTarla
+version: 1.0.0
+description: Advanced Farm System Plugin for Paper 1.21
+author: Vixians
+main: com.vixians.tarla.TarlaPlugin
+api-version: "1.21"
+
+commands:
+  tarla:
+    description: Main vTarla command
+    usage: /tarla [help|reload|stats|profile|market|multiplier]
+    permission: tarla.command
+
+  tarlamarket:
+    description: Open Tarla Market
+    usage: /tarlamarket
+    permission: tarla.market
+
+  tarlamultiplier:
+    description: Open Multiplier GUI
+    usage: /tarlamultiplier
+    permission: tarla.multiplier
+
+  taladiscount:
+    description: Manage discounts
+    usage: /taladiscount [set|remove] <amount>
+    permission: tarla.admin.discount
+
+  talamultiplieradd:
+    description: Add new multiplier tier
+    usage: /talamultiplieradd <name> <multiplier> <price> <permission>
+    permission: tarla.admin.multiplier
+
+permissions:
+  tarla.*:
+    description: Full vTarla access
+    default: op
+    children:
+      tarla.command: true
+      tarla.market: true
+      tarla.multiplier: true
+      tarla.admin.*: true
+  
+  tarla.command:
+    description: Use /tarla command
+    default: true
+  
+  tarla.market:
+    description: Access market
+    default: true
+  
+  tarla.multiplier:
+    description: Access multiplier system
+    default: true
+  
+  tarla.admin.*:
+    description: All admin permissions
+    default: op
+    children:
+      tarla.admin.reload: true
+      tarla.admin.discount: true
+      tarla.admin.multiplier: true
+      tarla.admin.setworldfarm: true
+  
+  tarla.admin.reload:
+    description: Reload plugin
+    default: op
+  
+  tarla.admin.discount:
+    description: Manage discounts
+    default: op
+  
+  tarla.admin.multiplier:
+    description: Manage multipliers
+    default: op
+  
+  tarla.admin.setworldfarm:
+    description: Set farm world
+    default: op
