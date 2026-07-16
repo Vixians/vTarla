@@ -41,21 +41,17 @@ public class TarlaCommand implements CommandExecutor {
                 sendProfile(player);
                 break;
             case "market":
-                plugin.getTaskManager().runAsync(() -> {
-                    // Open market
-                });
+                com.vixians.tarla.utils.GUIUtil.openMarketGUI(player);
                 break;
             case "multiplier":
-                plugin.getTaskManager().runAsync(() -> {
-                    // Open multiplier GUI
-                });
+                com.vixians.tarla.utils.GUIUtil.openMultiplierGUI(player);
                 break;
             case "reload":
                 if (!player.hasPermission("tarla.admin.reload")) {
                     player.sendMessage(MessageUtil.colorize(plugin.getConfigManager().getMessagePrefix() + "&cYou don't have permission!"));
                     return true;
                 }
-                reloadPlugin();
+                reloadPlugin(player);
                 break;
             default:
                 sendHelp(player);
@@ -73,28 +69,21 @@ public class TarlaCommand implements CommandExecutor {
         if (player.hasPermission("tarla.admin.reload")) {
             player.sendMessage(prefix + "§a/tarla reload §7- Reload plugin");
         }
-        player.sendMessage(prefix + "§6================================");
+        player.sendMessage(prefix + "§6=====================================");
     }
 
     private void sendStats(Player player) {
-        long coins = plugin.getCoinManager().getCoins(player);
-        long multiplier = plugin.getMultiplierManager().getMultiplier(player);
-        int discount = plugin.getDiscountManager().getCurrentDiscount();
-        
-        String prefix = MessageUtil.colorize(plugin.getConfigManager().getMessagePrefix());
-        player.sendMessage(prefix + "§6========== Your Statistics ==========");
-        player.sendMessage(prefix + "§aCoins: §6" + coins);
-        player.sendMessage(prefix + "§aMultiplier: §6" + multiplier + "x");
-        player.sendMessage(prefix + "§aDiscount: §6" + discount + "%");
-        player.sendMessage(prefix + "§6=====================================");
+        com.vixians.tarla.stats.PlayerStats stats = new com.vixians.tarla.stats.PlayerStats(plugin, player);
+        player.sendMessage(MessageUtil.colorize(stats.getStatisticsFormatted()));
     }
 
     private void sendProfile(Player player) {
         sendStats(player);
     }
 
-    private void reloadPlugin() {
+    private void reloadPlugin(Player player) {
         plugin.getConfigManager().reloadConfig();
-        plugin.getLogger().info("§aPlugin reloaded!");
+        player.sendMessage(MessageUtil.colorize(plugin.getConfigManager().getMessagePrefix() + "&aPlugin reloaded!"));
+        plugin.getLogger().info("§aPlugin reloaded by " + player.getName());
     }
 }
