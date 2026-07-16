@@ -2,16 +2,17 @@ package com.vixians.tarla.database;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.*;
-import java.io.File;
 
 public class DatabaseManager {
     private JavaPlugin plugin;
     private Connection connection;
     private String dbPath;
+    private BackupManager backupManager;
 
     public DatabaseManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.dbPath = plugin.getDataFolder() + "/database.db";
+        this.backupManager = new BackupManager(plugin);
         initializeDatabase();
     }
 
@@ -21,7 +22,7 @@ public class DatabaseManager {
             connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             connection.setAutoCommit(false);
             createTables();
-            plugin.getLogger().info("§aDatabase initialized successfully!");
+            plugin.getLogger().info("✓ Database initialized successfully!");
         } catch (Exception e) {
             plugin.getLogger().severe("Database error: " + e.getMessage());
             e.printStackTrace();
@@ -32,20 +33,17 @@ public class DatabaseManager {
         try {
             Statement stmt = connection.createStatement();
 
-            // Coins table
             stmt.execute("CREATE TABLE IF NOT EXISTS player_coins (" +
                     "uuid TEXT PRIMARY KEY," +
                     "coins LONG DEFAULT 0," +
-                    "last_updated LONG DEFAULT " + System.currentTimeMillis() + ")" );
+                    "last_updated LONG DEFAULT " + System.currentTimeMillis() + ")");
 
-            // Multipliers table
             stmt.execute("CREATE TABLE IF NOT EXISTS player_multipliers (" +
                     "uuid TEXT PRIMARY KEY," +
                     "multiplier_tier TEXT DEFAULT 'default'," +
                     "multiplier_value REAL DEFAULT 1.0," +
                     "last_updated LONG DEFAULT " + System.currentTimeMillis() + ")");
 
-            // Farm data table
             stmt.execute("CREATE TABLE IF NOT EXISTS farm_breaks (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "uuid TEXT," +
@@ -54,14 +52,12 @@ public class DatabaseManager {
                     "break_time LONG," +
                     "coins_earned LONG)");
 
-            // Discount history table
             stmt.execute("CREATE TABLE IF NOT EXISTS discount_history (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "discount_percentage INTEGER," +
                     "set_time LONG," +
                     "set_by TEXT)");
 
-            // Market purchases table
             stmt.execute("CREATE TABLE IF NOT EXISTS market_purchases (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "uuid TEXT," +
@@ -70,7 +66,7 @@ public class DatabaseManager {
                     "purchase_time LONG)");
 
             connection.commit();
-            plugin.getLogger().info("§aAll database tables created successfully!");
+            plugin.getLogger().info("✓ All database tables created successfully!");
         } catch (SQLException e) {
             plugin.getLogger().severe("Error creating tables: " + e.getMessage());
             e.printStackTrace();
@@ -108,11 +104,41 @@ public class DatabaseManager {
         }
     }
 
+    public long getTotalPlayers() {
+        try {
+            ResultSet rs = executeQuery("SELECT COUNT(DISTINCT uuid) as count FROM player_coins");
+            if (rs != null && rs.next()) {
+                long count = rs.getLong("count");
+                rs.close();
+                return count;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public long getTotalCoins() {
+        try {
+            ResultSet rs = executeQuery("SELECT SUM(coins) as total FROM player_coins");
+            if (rs != null && rs.next()) {
+                long total = rs.getLong("total");
+                rs.close();
+                return total;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public void close() {
         try {
             if (connection != null && !connection.isClosed()) {
+                backupManager.createBackup();
+                backupManager.cleanOldBackups(5);
                 connection.close();
-                plugin.getLogger().info("§aDatabase connection closed!");
+                plugin.getLogger().info("✓ Database connection closed!");
             }
         } catch (SQLException e) {
             plugin.getLogger().severe("Error closing database: " + e.getMessage());

@@ -22,20 +22,16 @@ public class CropBreakListener implements Listener {
 
         String farmWorld = plugin.getConfigManager().getFarmWorld();
         if (!block.getWorld().getName().equals(farmWorld)) {
-            return; // Not in farm world
-        }
-
-        String blockType = block.getType().toString();
-        boolean isCrop = isCrop(blockType);
-
-        if (!isCrop) {
             return;
         }
 
-        // Record the break
+        String blockType = block.getType().toString();
+        if (!isCrop(blockType)) {
+            return;
+        }
+
         plugin.getFarmManager().recordCropBreak(player, block.getLocation(), blockType);
 
-        // Send action bar message
         long coins = plugin.getConfigManager().getCoinsPerCrop();
         long multiplier = plugin.getMultiplierManager().getMultiplier(player);
         long earnedCoins = coins * multiplier;

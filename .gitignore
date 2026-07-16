@@ -9,3 +9,9 @@ db/
 plugins/vTarla/
 database.db
 .DS_Store
+.classpath
+.project
+.settings/
+*.swp
+*.swo
+*~

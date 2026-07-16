@@ -4,32 +4,38 @@ description: Advanced Farm System Plugin for Paper 1.21
 author: Vixians
 main: com.vixians.tarla.TarlaPlugin
 api-version: "1.21"
+website: "https://github.com/Vixians/vTarla"
 
 commands:
   tarla:
     description: Main vTarla command
     usage: /tarla [help|reload|stats|profile|market|multiplier]
     permission: tarla.command
+    aliases: [t]
 
   tarlamarket:
     description: Open Tarla Market
     usage: /tarlamarket
     permission: tarla.market
+    aliases: [tmarket, tm]
 
   tarlamultiplier:
     description: Open Multiplier GUI
     usage: /tarlamultiplier
     permission: tarla.multiplier
+    aliases: [tmultiplier, tmult, tx]
 
   taladiscount:
     description: Manage discounts
     usage: /taladiscount [set|remove] <amount>
     permission: tarla.admin.discount
+    aliases: [tdiscount]
 
-  talamultiplieradd:
-    description: Add new multiplier tier
-    usage: /talamultiplieradd <name> <multiplier> <price> <permission>
-    permission: tarla.admin.multiplier
+  taladmin:
+    description: Admin commands
+    usage: /taladmin [backup|stats|reload]
+    permission: tarla.admin.*
+    aliases: [tadmin]
 
 permissions:
   tarla.*:
@@ -53,6 +59,26 @@ permissions:
     description: Access multiplier system
     default: true
   
+  tarla.multiplier.bronze:
+    description: Bronze multiplier access
+    default: true
+  
+  tarla.multiplier.silver:
+    description: Silver multiplier access
+    default: op
+  
+  tarla.multiplier.gold:
+    description: Gold multiplier access
+    default: op
+  
+  tarla.multiplier.diamond:
+    description: Diamond multiplier access
+    default: op
+  
+  tarla.multiplier.emerald:
+    description: Emerald multiplier access
+    default: op
+  
   tarla.admin.*:
     description: All admin permissions
     default: op
@@ -61,6 +87,7 @@ permissions:
       tarla.admin.discount: true
       tarla.admin.multiplier: true
       tarla.admin.setworldfarm: true
+      tarla.admin.backup: true
   
   tarla.admin.reload:
     description: Reload plugin
@@ -76,4 +103,8 @@ permissions:
   
   tarla.admin.setworldfarm:
     description: Set farm world
+    default: op
+  
+  tarla.admin.backup:
+    description: Create backups
     default: op
