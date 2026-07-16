@@ -2,12 +2,11 @@ package com.vixians.tarla.commands;
 
 import com.vixians.tarla.TarlaPlugin;
 import com.vixians.tarla.utils.MessageUtil;
+import com.vixians.tarla.utils.GUIUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.Bukkit;
 
 public class TarlaMarketCommand implements CommandExecutor {
     private TarlaPlugin plugin;
@@ -30,21 +29,7 @@ public class TarlaMarketCommand implements CommandExecutor {
             return true;
         }
 
-        openMarket(player);
+        GUIUtil.openMarketGUI(player);
         return true;
-    }
-
-    private void openMarket(Player player) {
-        String title = MessageUtil.colorize(plugin.getConfigManager().getMarketTitle());
-        Inventory market = Bukkit.createInventory(null, 36, title);
-        
-        int slot = 0;
-        for (var item : plugin.getMarketManager().getMarketItems().values()) {
-            if (slot < 36) {
-                market.setItem(slot++, item.toItemStack());
-            }
-        }
-        
-        player.openInventory(market);
     }
 }

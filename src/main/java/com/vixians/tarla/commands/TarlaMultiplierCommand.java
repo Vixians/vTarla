@@ -2,12 +2,11 @@ package com.vixians.tarla.commands;
 
 import com.vixians.tarla.TarlaPlugin;
 import com.vixians.tarla.utils.MessageUtil;
+import com.vixians.tarla.utils.GUIUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.Bukkit;
 
 public class TarlaMultiplierCommand implements CommandExecutor {
     private TarlaPlugin plugin;
@@ -30,14 +29,7 @@ public class TarlaMultiplierCommand implements CommandExecutor {
             return true;
         }
 
-        openMultiplierGUI(player);
+        GUIUtil.openMultiplierGUI(player);
         return true;
-    }
-
-    private void openMultiplierGUI(Player player) {
-        String title = "§6Multiplier Menu";
-        Inventory gui = Bukkit.createInventory(null, 27, title);
-        
-        player.openInventory(gui);
     }
 }

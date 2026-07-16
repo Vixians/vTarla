@@ -1,0 +1,11 @@
+.idea/
+*.iml
+target/
+*.class
+*.jar
+*.log
+db/
+*.db
+plugins/vTarla/
+database.db
+.DS_Store
