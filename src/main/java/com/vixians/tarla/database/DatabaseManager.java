@@ -1,15 +1,16 @@
 package com.vixians.tarla.database;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import com.vixians.tarla.TarlaPlugin;
 import java.sql.*;
+import java.io.File;
 
 public class DatabaseManager {
-    private JavaPlugin plugin;
+    private TarlaPlugin plugin;
     private Connection connection;
     private String dbPath;
     private BackupManager backupManager;
 
-    public DatabaseManager(JavaPlugin plugin) {
+    public DatabaseManager(TarlaPlugin plugin) {
         this.plugin = plugin;
         this.dbPath = plugin.getDataFolder() + "/database.db";
         this.backupManager = new BackupManager(plugin);
@@ -22,7 +23,7 @@ public class DatabaseManager {
             connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             connection.setAutoCommit(false);
             createTables();
-            plugin.getLogger().info("✓ Database initialized successfully!");
+            plugin.getLogger().info("\u2713 Database initialized successfully!");
         } catch (Exception e) {
             plugin.getLogger().severe("Database error: " + e.getMessage());
             e.printStackTrace();
@@ -66,7 +67,7 @@ public class DatabaseManager {
                     "purchase_time LONG)");
 
             connection.commit();
-            plugin.getLogger().info("✓ All database tables created successfully!");
+            plugin.getLogger().info("\u2713 All database tables created successfully!");
         } catch (SQLException e) {
             plugin.getLogger().severe("Error creating tables: " + e.getMessage());
             e.printStackTrace();
@@ -138,7 +139,7 @@ public class DatabaseManager {
                 backupManager.createBackup();
                 backupManager.cleanOldBackups(5);
                 connection.close();
-                plugin.getLogger().info("✓ Database connection closed!");
+                plugin.getLogger().info("\u2713 Database connection closed!");
             }
         } catch (SQLException e) {
             plugin.getLogger().severe("Error closing database: " + e.getMessage());
