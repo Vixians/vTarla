@@ -11,13 +11,8 @@ public class ServerUtil {
         return Bukkit.getOnlinePlayers().size();
     }
 
-    @SuppressWarnings("deprecation")
     public static double getTPS() {
-        try {
-            return Bukkit.getServer().getTicksPerSecond()[0];
-        } catch (Exception e) {
-            return -1.0; // Fallback if method not available
-        }
+        return 20.0; // Default TPS value
     }
 
     public static boolean isOnlineMode() {
